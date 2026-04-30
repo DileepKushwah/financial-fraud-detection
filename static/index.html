@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuardianAI | Advanced Fraud Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top left, #1e293b, #0f172a);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            padding-bottom: 3rem;
+        }
+
+        header {
+            width: 100%;
+            padding: 2rem;
+            text-align: center;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1100px;
+            margin: 1rem auto;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 2rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-title {
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .scenario-chips {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .chip:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-predict {
+            width: 100%;
+            padding: 1.1rem;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .result-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .status-badge {
+            padding: 0.6rem 2rem;
+            border-radius: 50px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            transition: all 0.5s ease;
+        }
+
+        .status-idle { background: rgba(255, 255, 255, 0.05); color: var(--text-dim); border: 1px solid var(--glass-border); }
+        .status-legit { background: rgba(34, 197, 94, 0.2); color: var(--success); border: 1px solid var(--success); box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); }
+        .status-fraud { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
+
+        .probability-gauge {
+            position: relative;
+            width: 220px;
+            height: 220px;
+        }
+
+        .gauge-svg {
+            transform: rotate(-90deg);
+        }
+
+        .gauge-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 12;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 12;
+            stroke-linecap: round;
+            stroke-dasharray: 565.48;
+            stroke-dashoffset: 565.48;
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.34, 1.56, 0.64, 1), stroke 0.5s;
+        }
+
+        .gauge-text-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gauge-text {
+            font-size: 3rem;
+            font-weight: 800;
+        }
+
+        .gauge-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-top: -0.5rem;
+        }
+
+        .metrics-list {
+            width: 100%;
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 16px;
+        }
+
+        .metric-info { text-align: left; }
+        .metric-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; }
+        .metric-value { font-size: 1.1rem; font-weight: 600; margin-top: 0.1rem; }
+
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .tooltip {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .legend-card {
+            margin-top: 1rem;
+            padding: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        .highlight-fraud { color: var(--danger); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">GuardianAI</div>
+        <div class="subtitle">AI-POWERED FRAUD DETECTION SYSTEM</div>
+    </header>
+
+    <div class="container">
+        <!-- Input Section -->
+        <div class="glass-card">
+            <div class="section-title">
+                <span>🛡️</span> Transaction Analyzer
+            </div>
+            
+            <div class="scenario-chips">
+                <div class="chip active" onclick="loadScenario('normal')">Grocery (Safe)</div>
+                <div class="chip" onclick="loadScenario('travel')">Foreign Travel</div>
+                <div class="chip" onclick="loadScenario('suspicious')">High-Freq Anomaly</div>
+                <div class="chip" onclick="loadScenario('fraud')">High-Risk (Fraud Demo)</div>
+            </div>
+
+            <form id="predictForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Transaction Amount ($)</label>
+                        <input type="number" step="0.01" name="amt" id="amt" value="45.20" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Merchant Category (MCC)</label>
+                        <input type="text" name="mcc" id="mcc" placeholder="e.g. 5411 or AIRLINE" value="5411" required>
+                        <div class="tooltip">Raw code or name (e.g. 3007 for Airline)</div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Dist. to Merchant (mi)</label>
+                        <input type="number" step="0.1" name="dist_to_merch" id="dist_to_merch" value="1.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time Since Last (sec)</label>
+                        <input type="number" name="time_since_last_txn" id="time_since_last_txn" value="86400" required>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Txn Count (1hr)</label>
+                        <input type="number" name="txn_count_1hr" id="txn_count_1hr" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>User Avg Amount ($)</label>
+                        <input type="number" step="0.1" name="user_avg_amt" id="user_avg_amt" value="50.0" required>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Amount Z-Score</label>
+                        <input type="number" step="0.1" name="amt_z_score" id="amt_z_score" value="0.0" required>
+                        <div class="tooltip">Std Dev from personal avg</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount Ratio</label>
+                        <input type="number" step="0.1" name="amt_ratio_to_avg" id="amt_ratio_to_avg" value="1.0" required>
+                        <div class="tooltip">Ratio vs personal avg</div>
+                    </div>
+                </div>
+
+                <div style="display:none">
+                    <input type="hidden" name="user_txn_count" id="user_txn_count" value="100">
+                    <input type="hidden" name="user_std_amt" id="user_std_amt" value="10">
+                </div>
+
+                <button type="submit" class="btn-predict" id="submitBtn">
+                    <span id="btnText">EXECUTE ANALYSIS</span>
+                    <div class="loader" id="loader"></div>
+                </button>
+            </form>
+            
+            <div class="legend-card">
+                <b>Pro Tip:</b> Try <span class="highlight-fraud">AIRLINE</span> MCC with <span class="highlight-fraud">Ratio > 5</span> and <span class="highlight-fraud">Dist = 0</span> to see high risk probabilities.
+            </div>
+        </div>
+
+        <!-- Result Section -->
+        <div class="glass-card result-panel">
+            <div id="statusBadge" class="status-badge status-idle">WAITING</div>
+            
+            <div class="probability-gauge">
+                <svg class="gauge-svg" width="220" height="220">
+                    <circle class="gauge-bg" cx="110" cy="110" r="90"></circle>
+                    <circle id="gaugeFill" class="gauge-fill" cx="110" cy="110" r="90"></circle>
+                </svg>
+                <div class="gauge-text-container">
+                    <div id="probText" class="gauge-text">0%</div>
+                    <div class="gauge-label">Risk</div>
+                </div>
+            </div>
+
+            <div class="metrics-list">
+                <div class="metric-row">
+                    <div class="metric-info">
+                        <div class="metric-label">AI DECISION</div>
+                        <div id="decisionText" class="metric-value">---</div>
+                    </div>
+                    <div class="metric-info" style="text-align: right;">
+                        <div class="metric-label">THRESHOLD</div>
+                        <div id="thresholdText" class="metric-value">0.25</div>
+                    </div>
+                </div>
+                <div class="metric-row">
+                    <div class="metric-info">
+                        <div class="metric-label">ENCODED MCC</div>
+                        <div id="mccEncText" class="metric-value">---</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="resultDescription" style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-dim);">
+                Enter transaction details to begin the neural risk evaluation.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scenarios = {
+            normal: { amt: 45.20, mcc: "5411", dist_to_merch: 1.5, time_since_last_txn: 86400, txn_count_1hr: 1, user_avg_amt: 50, amt_z_score: 0, amt_ratio_to_avg: 0.9 },
+            travel: { amt: 850.00, mcc: "7011", dist_to_merch: 3500.5, time_since_last_txn: 43200, txn_count_1hr: 2, user_avg_amt: 120, amt_z_score: 2.5, amt_ratio_to_avg: 7.0 },
+            suspicious: { amt: 1200.00, mcc: "5947", dist_to_merch: 10, time_since_last_txn: 10, txn_count_1hr: 15, user_avg_amt: 80, amt_z_score: 4.2, amt_ratio_to_avg: 15.0 },
+            fraud: { amt: 5000.00, mcc: "3007", dist_to_merch: 0, time_since_last_txn: 1, txn_count_1hr: 25, user_avg_amt: 50, amt_z_score: 100, amt_ratio_to_avg: 100 }
+        };
+
+        function loadScenario(key) {
+            const s = scenarios[key];
+            Object.keys(s).forEach(id => {
+                document.getElementById(id).value = s[id];
+            });
+            
+            // Update chip UI
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        const form = document.getElementById('predictForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const loader = document.getElementById('loader');
+        const gaugeFill = document.getElementById('gaugeFill');
+        const probText = document.getElementById('probText');
+        const statusBadge = document.getElementById('statusBadge');
+        const decisionText = document.getElementById('decisionText');
+        const resultDescription = document.getElementById('resultDescription');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            btnText.style.display = 'none';
+            loader.style.display = 'block';
+            submitBtn.disabled = true;
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            const payload = {
+                amt: parseFloat(data.amt),
+                dist_to_merch: parseFloat(data.dist_to_merch),
+                time_since_last_txn: parseFloat(data.time_since_last_txn),
+                txn_count_1hr: parseInt(data.txn_count_1hr),
+                amt_z_score: parseFloat(data.amt_z_score),
+                amt_ratio_to_avg: parseFloat(data.amt_ratio_to_avg),
+                user_txn_count: parseInt(data.user_txn_count),
+                user_avg_amt: parseFloat(data.user_avg_amt),
+                user_std_amt: parseFloat(data.user_std_amt),
+                mcc: data.mcc
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                updateUI(result);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Analysis failed. Check your network or server logs.');
+            } finally {
+                btnText.style.display = 'block';
+                loader.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+
+        function updateUI(result) {
+            const prob = result.fraud_probability;
+            const percentage = Math.round(prob * 100);
+            
+            // Gauge Animation
+            const circumference = 2 * Math.PI * 90;
+            const offset = circumference - (prob * circumference);
+            gaugeFill.style.strokeDashoffset = offset;
+            
+            // Color Logic
+            let color = 'var(--success)';
+            if (prob >= 0.5) color = 'var(--danger)';
+            else if (prob >= 0.25) color = 'var(--warning)';
+            gaugeFill.style.stroke = color;
+
+            probText.innerText = `${percentage}%`;
+            probText.style.color = color;
+            
+            // Badge & Decision
+            statusBadge.innerText = result.is_fraud ? 'FRAUD ALERT' : 'SECURE';
+            statusBadge.className = `status-badge ${result.is_fraud ? 'status-fraud' : 'status-legit'}`;
+            
+            decisionText.innerText = result.decision;
+            decisionText.style.color = color;
+            
+            document.getElementById('mccEncText').innerText = result.mcc_encoded_used;
+            
+            // Description
+            if (result.is_fraud) {
+                resultDescription.innerHTML = `High probability of fraudulent activity. <br/><b>Flag:</b> Unusual purchase pattern detected for this user profile.`;
+            } else {
+                resultDescription.innerHTML = `Transaction is consistent with user behavioral history. <br/><b>Flag:</b> Risk remains within acceptable variance.`;
+            }
+        }
+    </script>
+</body>
+</html>

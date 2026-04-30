@@ -100,3 +100,28 @@ The **Interactive API Docs** are at `http://localhost:8000/docs`.
     "threshold_used": 0.25
   }
   ```
+## 🚀 Deployment Guide
+
+### 1. Push to GitHub
+1. Create a **New Repository** on GitHub (name it `financial-fraud-detection`).
+2. Run the following commands in your terminal:
+   ```bash
+   git remote add origin https://github.com/YOUR_USERNAME/financial-fraud-detection.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+### 2. Deploy to Railway.app
+1. Go to [Railway.app](https://railway.app/).
+2. Click **New Project** > **Deploy from GitHub repo**.
+3. Select your `financial-fraud-detection` repository.
+4. Railway will automatically detect the `Dockerfile` and start the build.
+5. Once deployed, click on the **Settings** tab in Railway to generate a public domain (URL).
+
+### 3. Usage
+- Open your Railway URL in a browser.
+- Use the **Scenario Chips** to test different transaction types.
+- The **Risk Gauge** will animate based on the model's prediction.
+
+---
+**Note**: The model uses a threshold of `0.25`. Values above this are flagged as `🚨 FRAUD`.

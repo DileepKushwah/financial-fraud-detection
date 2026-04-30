@@ -112,7 +112,7 @@ The **Interactive API Docs** are at `http://localhost:8000/docs`.
    ```
 
 ### 2. Deploy to Railway.app
-1. Go to [Railway.app](https://railway.app/).
+1. Go to [Railway.app](financial-fraud-detection-production-d982.up.railway.app).
 2. Click **New Project** > **Deploy from GitHub repo**.
 3. Select your `financial-fraud-detection` repository.
 4. Railway will automatically detect the `Dockerfile` and start the build.
